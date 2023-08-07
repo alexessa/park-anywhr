@@ -7,9 +7,14 @@ import {
   ListItem,
   Typography,
 } from "@mui/material";
-import { DeleteOutline, EditOutlined, RemoveRedEyeOutlined } from "@mui/icons-material";
+import {
+  DeleteOutline,
+  EditOutlined,
+  RemoveRedEyeOutlined,
+} from "@mui/icons-material";
 
 import { ParkingArea } from "../../../models/parking-area";
+import { Link } from "react-router-dom";
 
 const ParkingAreaItem = (prop: any) => {
   const parkingArea: ParkingArea = prop.data;
@@ -18,7 +23,11 @@ const ParkingAreaItem = (prop: any) => {
     <>
       <ListItem>
         <Card>
-          <CardMedia image={parkingArea.imageUrl} title={parkingArea.title} sx={{ height: 200 }} />
+          <CardMedia
+            image={parkingArea.imageUrl}
+            title={parkingArea.title}
+            sx={{ height: 200 }}
+          />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {parkingArea.title}
@@ -30,18 +39,17 @@ const ParkingAreaItem = (prop: any) => {
               {parkingArea.description}
             </Typography>
           </CardContent>
-          <CardActions sx={{display: "flex", justifyContent: "center"}}>
+          <CardActions sx={{ display: "flex", justifyContent: "center" }}>
             <Button size="small">
-              <RemoveRedEyeOutlined /> &nbsp;
-              View Spaces
+              <RemoveRedEyeOutlined /> &nbsp; View Spaces
             </Button>
+            <Link to={`/parking/${parkingArea.id}`} className="all-unset">
+              <Button size="small">
+                <EditOutlined /> &nbsp; Edit Area
+              </Button>
+            </Link>
             <Button size="small">
-              <EditOutlined /> &nbsp;
-              Edit Area
-            </Button>
-            <Button size="small">
-              <DeleteOutline /> &nbsp;
-              Remove Area
+              <DeleteOutline /> &nbsp; Remove Area
             </Button>
           </CardActions>
         </Card>

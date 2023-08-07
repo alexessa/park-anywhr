@@ -13,6 +13,11 @@ const NavLinks = (props: any) => {
             Parking Area
           </Button>
         </NavLink>
+        <NavLink to="/add-parking-area" className="all-unset">
+          <Button fullWidth={isSmall} onClick={props.close} color="inherit" size="large">
+            Create Parking Area
+          </Button>
+        </NavLink>
       </ListItem>
     </List>
   );
