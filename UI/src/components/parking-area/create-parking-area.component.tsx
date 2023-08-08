@@ -1,4 +1,4 @@
-import React from "react";
+import { FormEvent } from "react";
 import GenericInput from "../../common/ui-elements/generic-input";
 import { Box, Button, Typography } from "@mui/material";
 import { VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../util/validators";
@@ -27,7 +27,7 @@ const CreateParkingArea = () => {
     false
   );
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     console.log(formState.inputs);
   };

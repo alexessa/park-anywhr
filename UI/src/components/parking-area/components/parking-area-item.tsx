@@ -4,6 +4,11 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   ListItem,
   Typography,
 } from "@mui/material";
@@ -12,15 +17,46 @@ import {
   EditOutlined,
   RemoveRedEyeOutlined,
 } from "@mui/icons-material";
+import { Link } from "react-router-dom";
+import { useState, useContext } from "react";
 
 import { ParkingArea } from "../../../models/parking-area";
-import { Link } from "react-router-dom";
+import { AuthContext } from "../../../common/context/authentication-context";
 
 const ParkingAreaItem = (prop: any) => {
+  const auth = useContext(AuthContext);
   const parkingArea: ParkingArea = prop.data;
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+
+  const openDeleteHandler = () => setDeleteConfirmation(true);
+  const closeDeleteHandler = () => setDeleteConfirmation(false);
 
   return (
     <>
+      <Dialog
+        open={deleteConfirmation}
+        onClose={closeDeleteHandler}
+        aria-labelledby="delete-dialog"
+        aria-describedby="delete-text"
+      >
+        <DialogTitle
+          id="delete-dialog"
+          sx={{ background: "red", color: "white" }}
+        >
+          Delete Parking Area
+        </DialogTitle>
+        <DialogContent sx={{ m: 2 }}>
+          <DialogContentText id="delete-text">
+            Are you sure you want to delete this parking area?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteHandler} color="primary">
+            Cancel
+          </Button>
+          <Button color="primary">Delete</Button>
+        </DialogActions>
+      </Dialog>
       <ListItem>
         <Card>
           <CardMedia
@@ -43,14 +79,18 @@ const ParkingAreaItem = (prop: any) => {
             <Button size="small">
               <RemoveRedEyeOutlined /> &nbsp; View Spaces
             </Button>
-            <Link to={`/parking/${parkingArea.id}`} className="all-unset">
-              <Button size="small">
-                <EditOutlined /> &nbsp; Edit Area
+            {auth.isLoggedIn && (
+              <Link to={`/parking/${parkingArea.id}`} className="all-unset">
+                <Button size="small">
+                  <EditOutlined /> &nbsp; Edit Area
+                </Button>
+              </Link>
+            )}
+            {auth.isLoggedIn && (
+              <Button size="small" onClick={openDeleteHandler}>
+                <DeleteOutline /> &nbsp; Remove Area
               </Button>
-            </Link>
-            <Button size="small">
-              <DeleteOutline /> &nbsp; Remove Area
-            </Button>
+            )}
           </CardActions>
         </Card>
       </ListItem>

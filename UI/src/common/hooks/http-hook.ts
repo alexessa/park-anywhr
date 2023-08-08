@@ -1,58 +1,57 @@
-import { useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 
-interface ApiResponse<T> {
-  data: T | null;
-  error: Error | null;
-  loading: boolean;
-}
+export const useHttpClient = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
-async function fetchData<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
-}
+  const activeHttpRequest: any = useRef([]);
 
-function useHttpClient<T>() {
-  const [apiResponse, setApiResponse] = useState<ApiResponse<T>>({
-    data: null,
-    error: null,
-    loading: false,
-  });
+  const sendRequest = useCallback(
+    async (
+      url: string,
+      method = "GET",
+      body: any = null,
+      headers: HeadersInit = {}
+    ) => {
+      setIsLoading(true);
+      const httpAbortCtrl = new AbortController();
+      activeHttpRequest.current.push(httpAbortCtrl);
+      try {
+        const response = await fetch(url, {
+          method,
+          headers,
+          body,
+          signal: httpAbortCtrl.signal,
+        });
 
-  const fetchDataFromApi = async (url: string, options?: RequestInit) => {
-    setApiResponse({ data: null, error: null, loading: true });
+        const responseData = await response.json();
 
-    try {
-      const data = await fetchData<T>(url, options);
-      setApiResponse({ data, error: null, loading: false });
-    } catch (error: any) {
-      setApiResponse({ data: null, error, loading: false });
-    }
-  };
+        activeHttpRequest.current = activeHttpRequest.current.filter(
+          (reqCtrl: AbortController) => reqCtrl !== httpAbortCtrl
+        );
 
-  const get = (url: string, headers?: HeadersInit) =>
-    fetchDataFromApi(url, { method: "GET", headers });
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+        setIsLoading(false);
 
-  const post = (url: string, body: any, headers?: HeadersInit) =>
-    fetchDataFromApi(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
+        return responseData;
+      } catch (error: any) {
+        setError(error);
+        setIsLoading(false);
+        throw error;
+      }
+    },
+    []
+  );
 
-  const update = (url: string, body: any, headers?: HeadersInit) =>
-    fetchDataFromApi(url, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(body),
-    });
+  const clearError = () => setError(undefined);
 
-  const del = (url: string, headers?: HeadersInit) =>
-    fetchDataFromApi(url, { method: "DELETE", headers });
+  useEffect(() => {
+    activeHttpRequest.current.forEach((httpAbortCtrl: AbortController) =>
+      httpAbortCtrl.abort()
+    );
+  }, []);
 
-  return { apiResponse, get, post, update, del };
-}
-
-export default useHttpClient;
+  return { isLoading, error, sendRequest, clearError };
+};

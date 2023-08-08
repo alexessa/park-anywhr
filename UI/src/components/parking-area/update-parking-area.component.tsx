@@ -12,7 +12,7 @@ const UpdateParkingArea = () => {
   const parkingId = useParams().parkingId;
   const { apiResponse, get } = useHttpClient<ParkingArea>();
 
-  const [formState, inputHandler] = useForm(
+  const [formState, inputHandler, setFormData] = useForm(
     {
       title: {
         value: "",
@@ -21,7 +21,7 @@ const UpdateParkingArea = () => {
       description: {
         value: "",
         isValid: false,
-      },    
+      },
       imageUrl: {
         value: "",
         isValid: false,
@@ -38,8 +38,31 @@ const UpdateParkingArea = () => {
     get(`http://localhost:5000/api/parking/${parkingId}`, customHeaders);
   }, []);
 
+  useEffect(() => {
+    if (apiResponse.data) {
+      setFormData(
+        {
+          title: {
+            value: ((apiResponse.data as any).parking as ParkingArea).title,
+            isValid: true,
+          },
+          description: {
+            value: ((apiResponse.data as any).parking as ParkingArea)
+              .description,
+            isValid: true,
+          },
+          imageUrl: {
+            value: ((apiResponse.data as any).parking as ParkingArea).imageUrl,
+            isValid: true,
+          },
+        },
+        true
+      );
+    }
+  }, [setFormData, apiResponse.data]);
+
   return (
-    <Box sx={{p:4, display: "flex", justifyContent: "center"}}>
+    <Box sx={{ p: 4, display: "flex", justifyContent: "center" }}>
       {apiResponse.data && (
         <form>
           <GenericInput
@@ -59,7 +82,9 @@ const UpdateParkingArea = () => {
             validators={[VALIDATOR_MINLENGTH(10)]}
             errorText="Please enter a valid description of at least 10 characters"
             onInput={inputHandler}
-            initValue={((apiResponse.data as any).parking as ParkingArea).description}
+            initValue={
+              ((apiResponse.data as any).parking as ParkingArea).description
+            }
             initValid={formState.inputs.description.isValid}
           />
           <GenericInput
@@ -69,10 +94,17 @@ const UpdateParkingArea = () => {
             validators={[VALIDATOR_MINLENGTH(8)]}
             errorText="Please enter a valid image URL of at least 8 characters"
             onInput={inputHandler}
-            initValue={((apiResponse.data as any).parking as ParkingArea).imageUrl}
+            initValue={
+              ((apiResponse.data as any).parking as ParkingArea).imageUrl
+            }
             initValid={formState.inputs.imageUrl.isValid}
           />
-          <Button type="submit" size="small" variant="outlined" disabled={!formState.isValid}>
+          <Button
+            type="submit"
+            size="small"
+            variant="outlined"
+            disabled={!formState.isValid}
+          >
             Update Parking Area
           </Button>
         </form>

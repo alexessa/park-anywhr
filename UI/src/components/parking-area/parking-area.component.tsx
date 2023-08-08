@@ -16,7 +16,11 @@ const ParkingAreaComponent = () => {
   }, []);
 
   if (apiResponse.loading) {
-    return <CircularProgress />;
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 27 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (apiResponse.error) {
@@ -24,7 +28,7 @@ const ParkingAreaComponent = () => {
   }
 
   return (
-    <Box sx={{ p: 4, display: "flex", justifyContent: "center"}}>
+    <Box sx={{ p: 4, display: "flex", justifyContent: "center" }}>
       {!apiResponse.loading && apiResponse.data && (
         <ParkingAreaList data={(apiResponse.data as any).parkingAreas} />
       )}
