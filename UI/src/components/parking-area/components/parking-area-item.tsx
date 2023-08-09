@@ -1,6 +1,5 @@
 import {
   Alert,
-  Box,
   Button,
   Card,
   CardActions,
@@ -31,13 +30,9 @@ const ParkingAreaItem = (prop: any) => {
   const { error, sendRequest } = useHttpClient();
   const parkingArea: ParkingArea = prop.data;
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
-  const [spaceConfirmation, setSpaceConfirmation] = useState(false);
 
   const openDeleteHandler = () => setDeleteConfirmation(true);
   const closeDeleteHandler = () => setDeleteConfirmation(false);
-
-  const openSpaceHandler = () => setSpaceConfirmation(true);
-  const closeSpaceHandler = () => setSpaceConfirmation(false);
 
   const deleteParkingAreaHandler = async () => {
     try {
@@ -78,23 +73,6 @@ const ParkingAreaItem = (prop: any) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog
-        open={spaceConfirmation}
-        onClose={closeSpaceHandler}
-        aria-labelledby="space-dialog"
-        aria-describedby="space-text"
-      >
-        <DialogTitle
-          id="space-dialog"
-          sx={{ background: "#4db6ac", color: "white" }}
-        >
-          Parking Area
-        </DialogTitle>
-        <DialogContent sx={{ m: 2 }}>
-          <Box id="maps" sx={{height: 250, width: 300}}>
-          </Box>
-        </DialogContent>
-      </Dialog>
       <ListItem>
         <Card>
           <CardMedia
@@ -114,9 +92,11 @@ const ParkingAreaItem = (prop: any) => {
             </Typography>
           </CardContent>
           <CardActions sx={{ display: "flex", justifyContent: "center" }}>
-            <Button size="small" onClick={openSpaceHandler}>
-              <RemoveRedEyeOutlined /> &nbsp; View Spaces
-            </Button>
+            <Link to={`/parking/space/${parkingArea.id}`}>
+              <Button size="small" >
+                <RemoveRedEyeOutlined /> &nbsp; View Spaces
+              </Button>
+            </Link>
             {auth.isLoggedIn && auth.user.isAdmin === true && (
               <Link to={`/parking/${parkingArea.id}`} className="all-unset">
                 <Button size="small">

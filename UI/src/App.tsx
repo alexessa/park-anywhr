@@ -8,6 +8,7 @@ import UpdateParkingArea from "./components/parking-area/update-parking-area.com
 import Authentication from "./components/user-related/authentication.component";
 import { AuthContext } from "./common/context/authentication-context";
 import UserProfile from "./components/user-related/user-profile.component";
+import ParkingSpace from "./components/parking-space/parking-space.component";
 import CreateCar from "./components/user-related/create-car.component";
 import { User } from "./models/user";
 import "./index.css";
@@ -33,6 +34,7 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<ParkingAreaComponent />} />
           <Route path="parking/:parkingId" element={<UpdateParkingArea />} />
+          <Route path="parking/space/:parkingId" element={<ParkingSpace />} />
           <Route path="/add-parking-area" element={<CreateParkingArea />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/profile/car" element={<CreateCar />} />
