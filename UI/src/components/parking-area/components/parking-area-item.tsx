@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Box,
   Button,
   Card,
   CardActions,
@@ -22,17 +24,34 @@ import { useState, useContext } from "react";
 
 import { ParkingArea } from "../../../models/parking-area";
 import { AuthContext } from "../../../common/context/authentication-context";
+import { useHttpClient } from "../../../common/hooks/http-hook";
 
 const ParkingAreaItem = (prop: any) => {
   const auth = useContext(AuthContext);
+  const { error, sendRequest } = useHttpClient();
   const parkingArea: ParkingArea = prop.data;
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [spaceConfirmation, setSpaceConfirmation] = useState(false);
 
   const openDeleteHandler = () => setDeleteConfirmation(true);
   const closeDeleteHandler = () => setDeleteConfirmation(false);
 
+  const openSpaceHandler = () => setSpaceConfirmation(true);
+  const closeSpaceHandler = () => setSpaceConfirmation(false);
+
+  const deleteParkingAreaHandler = async () => {
+    try {
+      await sendRequest(
+        `http://localhost:5000/api/parking/${parkingArea.id}`,
+        "DELETE"
+      );
+      prop.onDelete((prop.data as ParkingArea).id);
+    } catch (error) {}
+  };
+
   return (
     <>
+      {error && <Alert severity="error">{(error as any).message}</Alert>}
       <Dialog
         open={deleteConfirmation}
         onClose={closeDeleteHandler}
@@ -54,8 +73,27 @@ const ParkingAreaItem = (prop: any) => {
           <Button onClick={closeDeleteHandler} color="primary">
             Cancel
           </Button>
-          <Button color="primary">Delete</Button>
+          <Button color="primary" onClick={deleteParkingAreaHandler}>
+            Delete
+          </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={spaceConfirmation}
+        onClose={closeSpaceHandler}
+        aria-labelledby="space-dialog"
+        aria-describedby="space-text"
+      >
+        <DialogTitle
+          id="space-dialog"
+          sx={{ background: "#4db6ac", color: "white" }}
+        >
+          Parking Area
+        </DialogTitle>
+        <DialogContent sx={{ m: 2 }}>
+          <Box id="maps" sx={{height: 250, width: 300}}>
+          </Box>
+        </DialogContent>
       </Dialog>
       <ListItem>
         <Card>
@@ -76,17 +114,17 @@ const ParkingAreaItem = (prop: any) => {
             </Typography>
           </CardContent>
           <CardActions sx={{ display: "flex", justifyContent: "center" }}>
-            <Button size="small">
+            <Button size="small" onClick={openSpaceHandler}>
               <RemoveRedEyeOutlined /> &nbsp; View Spaces
             </Button>
-            {auth.isLoggedIn && (
+            {auth.isLoggedIn && auth.user.isAdmin === true && (
               <Link to={`/parking/${parkingArea.id}`} className="all-unset">
                 <Button size="small">
                   <EditOutlined /> &nbsp; Edit Area
                 </Button>
               </Link>
             )}
-            {auth.isLoggedIn && (
+            {auth.isLoggedIn && auth.user.isAdmin === true && (
               <Button size="small" onClick={openDeleteHandler}>
                 <DeleteOutline /> &nbsp; Remove Area
               </Button>

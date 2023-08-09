@@ -10,11 +10,12 @@ import {
 import { AuthContext } from "../../common/context/authentication-context";
 import { useForm } from "../../common/hooks/form-hook";
 import { useHttpClient } from "../../common/hooks/http-hook";
+import { User } from "../../models/user";
 
 const Authentication = () => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest } = useHttpClient();
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -46,10 +47,9 @@ const Authentication = () => {
 
   const authenticationHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (isLogin) {
       try {
-        await sendRequest(
+        const responseData = await sendRequest(
           "http://localhost:5000/api/user/login",
           "POST",
           JSON.stringify({
@@ -59,11 +59,11 @@ const Authentication = () => {
           { "Content-Type": "application/json" }
         );
 
-        auth.login();
+        auth.login((responseData.user as User));
       } catch (error) {}
     } else {
       try {
-        await sendRequest(
+        const responseData = await sendRequest(
           "http://localhost:5000/api/user/signup",
           "POST",
           JSON.stringify({
@@ -73,7 +73,7 @@ const Authentication = () => {
           }),
           { "Content-Type": "application/json" }
         );
-        auth.login();
+        auth.login((responseData.user as User));
       } catch (error) {}
     }
   };
@@ -90,11 +90,11 @@ const Authentication = () => {
         <Card>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Typography variant="h5" component="h2" sx={{ m: 1 }}>
-              {!isLogin ? "Login" : "Register"}
+              {isLogin ? "Login" : "Register"}
             </Typography>
           </Box>
           <form onSubmit={authenticationHandler}>
-            {isLogin && (
+            {!isLogin && (
               <GenericInput
                 element="input"
                 id="name"
@@ -131,7 +131,7 @@ const Authentication = () => {
                 sx={{ m: 1 }}
                 disabled={!formState.isValid}
               >
-                {!isLogin ? "Log In" : "Sign Up"}
+                {isLogin ? "Log In" : "Sign Up"}
               </Button>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "center", p: 0.5 }}>
@@ -142,7 +142,7 @@ const Authentication = () => {
                 sx={{ m: 1 }}
                 onClick={switchHandler}
               >
-                Switch to {!isLogin ? "Sign Up" : "Log In"}
+                Switch to {isLogin ? "Sign Up" : "Log In"}
               </Button>
             </Box>
           </form>

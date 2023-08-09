@@ -1,4 +1,4 @@
-export class car {
+export class Car {
   public id!: number;
   public number_plate!: string;
   public brand!: string;

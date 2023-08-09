@@ -1,21 +1,28 @@
 import { Alert, Box, CircularProgress } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import useHttpClient from "../../common/hooks/http-hook";
+import { useHttpClient } from "../../common/hooks/http-hook";
 import ParkingAreaList from "./components/parking-area-list.component";
-import { useEffect } from "react";
 import { ParkingArea } from "../../models/parking-area";
 
 const ParkingAreaComponent = () => {
-  const { apiResponse, get } = useHttpClient<ParkingArea[]>();
-  useEffect(() => {
-    const customHeaders = {
-      "Content-Type": "application/json",
-    };
+  const [loadingParkingAreas, setLoadingParkingAreas] = useState<ParkingArea>();
+  const { isLoading, error, sendRequest } = useHttpClient();
 
-    get("http://localhost:5000/api/parking", customHeaders);
+  useEffect(() => {
+    const fetchParkingAreas = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/parking"
+        );
+
+        setLoadingParkingAreas(responseData.parkingAreas);
+      } catch (e) {}
+    };
+    fetchParkingAreas();
   }, []);
 
-  if (apiResponse.loading) {
+  if (isLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", py: 27 }}>
         <CircularProgress />
@@ -23,14 +30,18 @@ const ParkingAreaComponent = () => {
     );
   }
 
-  if (apiResponse.error) {
-    return <Alert severity="error">{apiResponse.error.message}</Alert>;
+  if (error) {
+    return <Alert severity="error">{(error as any).message}</Alert>;
+  }
+
+  const placeDeletedHandler = (deletedPlaceId: any) => {
+    setLoadingParkingAreas((prevParking) => (prevParking as any).filter((p: ParkingArea) => p.id !== deletedPlaceId));
   }
 
   return (
     <Box sx={{ p: 4, display: "flex", justifyContent: "center" }}>
-      {!apiResponse.loading && apiResponse.data && (
-        <ParkingAreaList data={(apiResponse.data as any).parkingAreas} />
+      {!isLoading && loadingParkingAreas && (
+        <ParkingAreaList data={loadingParkingAreas} onDeletePlace={placeDeletedHandler} />
       )}
     </Box>
   );

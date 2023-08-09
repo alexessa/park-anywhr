@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import { FormEvent, useContext } from "react";
 import {
   Alert,
   Box,
@@ -9,28 +9,30 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import GenericInput from "../../common/ui-elements/generic-input";
-import { VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../util/validators";
+import { VALIDATOR_REQUIRE } from "../../util/validators";
+import { AuthContext } from "../../common/context/authentication-context";
 import { useForm } from "../../common/hooks/form-hook";
 import { useHttpClient } from "../../common/hooks/http-hook";
 
-const CreateParkingArea = () => {
+const CreateCar = () => {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const { isLoading, error, sendRequest } = useHttpClient();
   const [formState, inputHandler] = useForm(
     {
-      title: {
+      number_plate: {
         value: "",
         isValid: false,
       },
-      description: {
+      brand: {
         value: "",
         isValid: false,
       },
-      address: {
+      model: {
         value: "",
         isValid: false,
       },
-      imageUrl: {
+      colour: {
         value: "",
         isValid: false,
       },
@@ -42,17 +44,17 @@ const CreateParkingArea = () => {
     event.preventDefault();
     try {
       await sendRequest(
-        "http://localhost:5000/api/parking",
+        `http://localhost:5000/api/user/cars/${auth.user.email}`,
         "POST",
         JSON.stringify({
-          title: formState.inputs.title.value,
-          description: formState.inputs.description.value,
-          address: formState.inputs.address.value,
-          imageUrl: formState.inputs.imageUrl.value,
+          number_plate: formState.inputs.number_plate.value.trim(),
+          brand: formState.inputs.brand.value,
+          model: formState.inputs.model.value,
+          colour: formState.inputs.colour.value,
         }),
         { "Content-Type": "application/json" }
       );
-      navigate("/");
+      navigate("/profile");
     } catch (err) {}
   };
 
@@ -65,39 +67,39 @@ const CreateParkingArea = () => {
         </Box>
       )}
       <Box p={4}>
-        <Typography variant="h6">Create Parking Area</Typography>
+        <Typography variant="h6">Create Car</Typography>
         <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
           <form onSubmit={handleFormSubmit}>
             <GenericInput
-              id="title"
+              id="number_plate"
               element="input"
-              label="Title"
+              label="Number Plate"
               validators={[VALIDATOR_REQUIRE()]}
-              errorText="Please enter a valid parking area title."
+              errorText="Please enter your car's number plate."
               onInput={inputHandler}
             />
             <GenericInput
-              id="description"
-              element="textarea"
-              label="Description"
-              validators={[VALIDATOR_MINLENGTH(8)]}
-              errorText="Please enter a valid description of at least 8 characters."
-              onInput={inputHandler}
-            />
-            <GenericInput
-              id="address"
+              id="brand"
               element="input"
-              label="Address"
-              validators={[VALIDATOR_MINLENGTH(10)]}
-              errorText="Please enter a valid address of at least 10 characters."
+              label="Car Brand"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please your car's brand name."
               onInput={inputHandler}
             />
             <GenericInput
-              id="imageUrl"
+              id="model"
               element="input"
-              label="Image URL"
-              validators={[VALIDATOR_MINLENGTH(8)]}
-              errorText="Please enter a valid image URL of at least 8 characters."
+              label="Car Model"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter your car's model name."
+              onInput={inputHandler}
+            />
+            <GenericInput
+              id="colour"
+              element="input"
+              label="Car Colour"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter your car's color."
               onInput={inputHandler}
             />
             <Button
@@ -114,4 +116,4 @@ const CreateParkingArea = () => {
   );
 };
 
-export default CreateParkingArea;
+export default CreateCar;

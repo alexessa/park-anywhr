@@ -37,9 +37,11 @@ export const useHttpClient = () => {
 
         return responseData;
       } catch (error: any) {
-        setError(error);
-        setIsLoading(false);
-        throw error;
+        if (error.name !== "AbortError") {
+          setError(error);
+          setIsLoading(false);
+          throw error;
+        }
       }
     },
     []

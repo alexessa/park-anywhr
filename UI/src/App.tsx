@@ -7,13 +7,23 @@ import CreateParkingArea from "./components/parking-area/create-parking-area.com
 import UpdateParkingArea from "./components/parking-area/update-parking-area.component";
 import Authentication from "./components/user-related/authentication.component";
 import { AuthContext } from "./common/context/authentication-context";
+import UserProfile from "./components/user-related/user-profile.component";
+import CreateCar from "./components/user-related/create-car.component";
+import { User } from "./models/user";
 import "./index.css";
 
 export const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<User>();
 
-  const login = useCallback(() => setIsLoggedIn(true), []);
-  const logout = useCallback(() => setIsLoggedIn(false), []);
+  const login = useCallback((user: User) => {
+    setIsLoggedIn(true);
+    setUser(user);
+  }, []);
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+    setUser(undefined);
+  }, []);
 
   let routes: any;
 
@@ -24,6 +34,8 @@ export const App = () => {
           <Route path="/" element={<ParkingAreaComponent />} />
           <Route path="parking/:parkingId" element={<UpdateParkingArea />} />
           <Route path="/add-parking-area" element={<CreateParkingArea />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile/car" element={<CreateCar />} />
           <Route path="*" element={<ParkingAreaComponent />} />
         </Routes>
       </>
@@ -43,7 +55,12 @@ export const App = () => {
   return (
     <>
       <AuthContext.Provider
-        value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+        value={{
+          isLoggedIn: isLoggedIn,
+          user: user as User,
+          login: login,
+          logout: logout,
+        }}
       >
         <MainLayout />
         {routes}

@@ -10,11 +10,6 @@ const NavLinks = (props: any) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleClick = (prop: any) => {
-    auth.logout;
-    return prop.close;
-  };
-
   return (
     <List>
       <ListItem>
@@ -29,6 +24,18 @@ const NavLinks = (props: any) => {
           </Button>
         </NavLink>
         {auth.isLoggedIn && (
+          <NavLink to="/profile" className="all-unset">
+            <Button
+              fullWidth={isSmall}
+              onClick={props.close}
+              color="inherit"
+              size="small"
+            >
+              Profile
+            </Button>
+          </NavLink>
+        )}
+        {auth.isLoggedIn && auth.user.isAdmin === true && (
           <NavLink to="/add-parking-area" className="all-unset">
             <Button
               fullWidth={isSmall}
@@ -55,7 +62,7 @@ const NavLinks = (props: any) => {
         {auth.isLoggedIn && (
           <Button
             fullWidth={isSmall}
-            onClick={handleClick(props)}
+            onClick={auth.logout}
             color="inherit"
             size="small"
           >

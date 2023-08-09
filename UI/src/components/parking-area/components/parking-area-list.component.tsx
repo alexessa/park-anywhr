@@ -17,7 +17,7 @@ const ParkingAreaList = (props: any) => {
     <>
       <List>
         {props.data.map((prop: ParkingArea) => (
-          <ParkingAreaItem key={prop.id} data={prop} />
+          <ParkingAreaItem key={prop.id} data={prop} onDelete={props.onDeletePlace}/>
         ))}
       </List>
     </>
