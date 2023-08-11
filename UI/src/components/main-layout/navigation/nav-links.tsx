@@ -22,7 +22,19 @@ const NavLinks = (props: any) => {
           >
             Parking Area
           </Button>
-        </NavLink>
+        </NavLink>{" "}
+        {auth.isLoggedIn && (
+          <NavLink to="/bookings" className="all-unset">
+            <Button
+              fullWidth={isSmall}
+              onClick={props.close}
+              color="inherit"
+              size="small"
+            >
+              Bookings
+            </Button>
+          </NavLink>
+        )}
         {auth.isLoggedIn && (
           <NavLink to="/profile" className="all-unset">
             <Button

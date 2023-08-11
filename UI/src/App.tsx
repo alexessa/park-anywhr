@@ -6,12 +6,16 @@ import ParkingAreaComponent from "./components/parking-area/parking-area.compone
 import CreateParkingArea from "./components/parking-area/create-parking-area.component";
 import UpdateParkingArea from "./components/parking-area/update-parking-area.component";
 import Authentication from "./components/user-related/authentication.component";
-import { AuthContext } from "./common/context/authentication-context";
 import UserProfile from "./components/user-related/user-profile.component";
 import ParkingSpace from "./components/parking-space/parking-space.component";
 import CreateCar from "./components/user-related/create-car.component";
+import CreateParkingSpace from "./components/parking-space/create-space.component";
+import SpaceBookingPage from "./components/booking/space-booking.component";
+import BookingsPage from "./components/booking/booking.component";
 import { User } from "./models/user";
+import { AuthContext } from "./common/context/authentication-context";
 import "./index.css";
+import "./index2.css";
 
 export const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,6 +39,9 @@ export const App = () => {
           <Route path="/" element={<ParkingAreaComponent />} />
           <Route path="parking/:parkingId" element={<UpdateParkingArea />} />
           <Route path="parking/space/:parkingId" element={<ParkingSpace />} />
+          <Route path="/parking/space/add/:parkingId" element={<CreateParkingSpace />} />
+          <Route path="/parking/space/booking/:spaceKey" element={<SpaceBookingPage />} />
+          <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/add-parking-area" element={<CreateParkingArea />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/profile/car" element={<CreateCar />} />

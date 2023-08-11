@@ -1,10 +1,10 @@
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
-  CardMedia,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,24 +13,24 @@ import {
   ListItem,
   Typography,
 } from "@mui/material";
-import {
-  DeleteOutline,
-  EditOutlined,
-  RemoveRedEyeOutlined,
-} from "@mui/icons-material";
-import { Link } from "react-router-dom";
-import { useState, useContext } from "react";
-
-import { ParkingArea } from "../../../models/parking-area";
-import { AuthContext } from "../../../common/context/authentication-context";
-import { useHttpClient } from "../../../common/hooks/http-hook";
+import { DeleteOutline } from "@mui/icons-material";
+import { useState } from "react";
 import { teal } from "@mui/material/colors";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { format } from "date-fns";
 
-const ParkingAreaItem = (prop: any) => {
-  const auth = useContext(AuthContext);
+import { Booking } from "../../../models/booking";
+import { useHttpClient } from "../../../common/hooks/http-hook";
+
+const BookingItem = (prop: any) => {
   const { error, sendRequest } = useHttpClient();
-  const parkingArea: ParkingArea = prop.data;
+  const booking: Booking = prop.data;
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyBILOHlkN5S7YbnI2_TU5-K9wnUQxU_Oc8",
+  });
 
   const openDeleteHandler = () => setDeleteConfirmation(true);
   const closeDeleteHandler = () => setDeleteConfirmation(false);
@@ -38,12 +38,16 @@ const ParkingAreaItem = (prop: any) => {
   const deleteParkingAreaHandler = async () => {
     try {
       await sendRequest(
-        `http://localhost:5000/api/parking/${parkingArea.id}`,
+        `http://localhost:5000/api/bookings/${booking.id}`,
         "DELETE"
       );
-      prop.onDelete((prop.data as ParkingArea).id);
+      prop.onDelete((prop.data as Booking).id);
     } catch (error) {}
   };
+
+  const splitSpaceKey = booking.parking_space_key.split("_");
+
+  const dateFormatted = new Date(booking.parking_date_time);
 
   return (
     <>
@@ -58,11 +62,11 @@ const ParkingAreaItem = (prop: any) => {
           id="delete-dialog"
           sx={{ background: "red", color: "white" }}
         >
-          Delete Parking Area
+          Delete Booking
         </DialogTitle>
         <DialogContent sx={{ m: 2 }}>
           <DialogContentText id="delete-text">
-            Are you sure you want to delete this parking area?
+            Are you sure you want to delete this booking?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -76,40 +80,36 @@ const ParkingAreaItem = (prop: any) => {
       </Dialog>
       <ListItem>
         <Card>
-          <CardMedia
-            image={parkingArea.imageUrl}
-            title={parkingArea.title}
-            sx={{ height: 200 }}
-          />
+          <Box>
+            {isLoaded && booking && (
+              <GoogleMap
+                mapContainerStyle={{ width: "600px", height: "300px" }}
+                zoom={16}
+                center={JSON.parse(booking.location)}
+              >
+                <Marker position={JSON.parse(booking.location)} />
+              </GoogleMap>
+            )}
+          </Box>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
-              {parkingArea.title}
+              {booking.parking_name}
             </Typography>
             <Typography variant="subtitle2" color="text.primary">
-              {parkingArea.address}
+              Parking Space Number: {splitSpaceKey[1]}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {parkingArea.description}
+              Date & Time: {format(dateFormatted, "dd MMMM yyyy HH:mm")}
             </Typography>
           </CardContent>
           <CardActions sx={{ display: "flex", justifyContent: "center" }}>
-            <Link to={`/parking/space/${parkingArea.id}`}>
-              <Button size="small" sx={{color: teal[300]}} >
-                <RemoveRedEyeOutlined /> &nbsp; View Spaces
-              </Button>
-            </Link>
-            {auth.isLoggedIn && auth.user.isAdmin === true && (
-              <Link to={`/parking/${parkingArea.id}`} className="all-unset">
-                <Button size="small" sx={{color: teal[300]}} >
-                  <EditOutlined /> &nbsp; Edit Area
-                </Button>
-              </Link>
-            )}
-            {auth.isLoggedIn && auth.user.isAdmin === true && (
-              <Button size="small" onClick={openDeleteHandler} sx={{color: teal[300]}} >
-                <DeleteOutline /> &nbsp; Remove Area
-              </Button>
-            )}
+            <Button
+              size="small"
+              onClick={openDeleteHandler}
+              sx={{ color: teal[300] }}
+            >
+              <DeleteOutline /> &nbsp; Remove Area
+            </Button>
           </CardActions>
         </Card>
       </ListItem>
@@ -117,4 +117,4 @@ const ParkingAreaItem = (prop: any) => {
   );
 };
 
-export default ParkingAreaItem;
+export default BookingItem;

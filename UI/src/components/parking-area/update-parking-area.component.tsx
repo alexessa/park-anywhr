@@ -90,7 +90,7 @@ const UpdateParkingArea = () => {
     return (
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Card>
-          <Typography variant="h6">Could not find location</Typography>
+          <Typography variant="h6">Could not find parking area</Typography>
         </Card>
       </Box>
     );
