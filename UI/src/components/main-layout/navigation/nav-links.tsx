@@ -1,4 +1,4 @@
-import { Add, Login, Logout } from "@mui/icons-material";
+import { Add, Assessment, Login, Logout } from "@mui/icons-material";
 import { Button, List, ListItem, useMediaQuery, useTheme } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
@@ -44,6 +44,18 @@ const NavLinks = (props: any) => {
               size="small"
             >
               Profile
+            </Button>
+          </NavLink>
+        )}
+        {auth.isLoggedIn && auth.user.isAdmin === true && (
+          <NavLink to="/reports" className="all-unset">
+            <Button
+              fullWidth={isSmall}
+              onClick={props.close}
+              color="inherit"
+              size="small"
+            >
+              <Assessment fontSize="small" /> Reports
             </Button>
           </NavLink>
         )}

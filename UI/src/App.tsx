@@ -12,6 +12,7 @@ import CreateCar from "./components/user-related/create-car.component";
 import CreateParkingSpace from "./components/parking-space/create-space.component";
 import SpaceBookingPage from "./components/booking/space-booking.component";
 import BookingsPage from "./components/booking/booking.component";
+import ReportsPage from "./components/reports/reports.component";
 import { User } from "./models/user";
 import { AuthContext } from "./common/context/authentication-context";
 import "./index.css";
@@ -43,6 +44,7 @@ export const App = () => {
           <Route path="/parking/space/booking/:spaceKey" element={<SpaceBookingPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/add-parking-area" element={<CreateParkingArea />} />
+          <Route path="/reports" element={<ReportsPage />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/profile/car" element={<CreateCar />} />
           <Route path="*" element={<ParkingAreaComponent />} />
